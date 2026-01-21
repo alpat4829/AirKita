@@ -9,9 +9,16 @@ class Pesanan extends Model
     protected $table = 'pesanan';
     protected $primaryKey = 'ID_Pesanan';
     protected $fillable = [
-        'ID_Pelanggan', 'ID_Produk', 'Tanggal_Pesan', 'Status_Pesanan', 
-        'Harga', 'Metode_Pembayaran', 'Status_Pembayaran', 
-        'Tanggal_Pembayaran', 'snap_token'
+        'ID_Pelanggan',
+        'ID_Produk',
+        'Tanggal_Pesan',
+        'Status_Pesanan',
+        'Harga',
+        'Jumlah',
+        'Metode_Pembayaran',
+        'Status_Pembayaran',
+        'Tanggal_Pembayaran',
+        'snap_token'
     ];
 
     public function pelanggan()

@@ -14,4 +14,9 @@ class Produk extends Model
     {
         return $this->belongsTo(Mitra::class, 'ID_Mitra', 'ID_Mitra');
     }
+
+    public function pesanan()
+    {
+        return $this->hasMany(Pesanan::class, 'ID_Produk', 'ID_Produk');
+    }
 }

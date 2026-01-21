@@ -178,7 +178,7 @@ export default function Welcome({ auth }) {
                                             size="lg"
                                             className="w-full sm:w-auto shadow-xl hover:shadow-2xl"
                                         >
-                                            Mulai Sekarang
+                                            Pesan Sekarang
                                         </Button>
                                     </Link>
                                     <a href="#features">
@@ -233,7 +233,7 @@ export default function Welcome({ auth }) {
                                         <img
                                             src="/images/water-droplet.png"
                                             alt="Airkita Water Droplet"
-                                            className="relative w-full h-auto max-w-md mx-auto rounded-full drop-shadow-[5_35px_70px_rgba(8,112,184,0.6)] opacity-70 aspect-square object-cover"
+                                            className="relative w-full h-auto max-w-md mx-auto rounded-full drop-shadow-[5_35px_70px_rgba(8,112,184,0.6)] opacity-70 aspect-square object-cover hover:scale-105 transition-transform duration-500"
                                         />
                                     </div>
                                 </div>
@@ -414,6 +414,9 @@ export default function Welcome({ auth }) {
                         </div>
                     </div>
                 </section>
+
+                
+                
 
                 {/* Role Selection Section */}
                 <section
