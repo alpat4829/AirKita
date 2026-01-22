@@ -1,9 +1,18 @@
 import { Head, router } from "@inertiajs/react";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+import Sidebar from "@/Components/Sidebar";
+import StatisticsCard from "@/Components/StatisticsCard";
 import DepotCard from "@/Components/DepotCard";
 import DepotFilters from "@/Components/DepotFilters";
+import Pagination from "@/Components/Pagination";
 import { useState } from "react";
-import { Droplets, ShoppingBag } from "lucide-react";
+import {
+    Droplets,
+    ShoppingBag,
+    Package,
+    CheckCircle,
+    Clock,
+    XCircle,
+} from "lucide-react";
 
 export default function DashboardPelanggan({
     auth,
@@ -11,43 +20,49 @@ export default function DashboardPelanggan({
     kelurahanList,
     kecamatanList,
     pelanggan,
+    statistics,
 }) {
     const [selectedKelurahan, setSelectedKelurahan] = useState(
         pelanggan.ID_KELURAHAN,
     );
     const [selectedKecamatan, setSelectedKecamatan] = useState("");
-    const [filteredDepots, setFilteredDepots] = useState(depots);
+    const [selectedBestSelling, setSelectedBestSelling] = useState("");
 
     const handleKelurahanChange = (value) => {
         setSelectedKelurahan(value);
-        filterDepots(value, selectedKecamatan);
+        applyFilters(value, selectedKecamatan, selectedBestSelling);
     };
 
     const handleKecamatanChange = (value) => {
         setSelectedKecamatan(value);
-        filterDepots(selectedKelurahan, value);
+        applyFilters(selectedKelurahan, value, selectedBestSelling);
     };
 
-    const filterDepots = (kelurahanId, kecamatanId) => {
-        let filtered = depots;
+    const handleBestSellingChange = (value) => {
+        setSelectedBestSelling(value);
+        applyFilters(selectedKelurahan, selectedKecamatan, value);
+    };
 
-        if (kelurahanId) {
-            filtered = filtered.filter((d) => d.ID_KELURAHAN == kelurahanId);
-        }
-
-        if (kecamatanId) {
-            filtered = filtered.filter(
-                (d) => d.kelurahan?.ID_Kecamatan == kecamatanId,
-            );
-        }
-
-        setFilteredDepots(filtered);
+    const applyFilters = (kelurahanId, kecamatanId, bestSelling) => {
+        router.get(
+            "/dashboard/pelanggan",
+            {
+                kelurahan: kelurahanId || undefined,
+                kecamatan: kecamatanId || undefined,
+                best_selling: bestSelling || undefined,
+            },
+            {
+                preserveState: true,
+                preserveScroll: true,
+            },
+        );
     };
 
     const handleReset = () => {
         setSelectedKelurahan(pelanggan.ID_KELURAHAN);
         setSelectedKecamatan("");
-        setFilteredDepots(depots);
+        setSelectedBestSelling("");
+        router.get("/dashboard/pelanggan");
     };
 
     const handleDepotClick = (depot) => {
@@ -55,40 +70,52 @@ export default function DashboardPelanggan({
     };
 
     return (
-        <AuthenticatedLayout
-            user={auth.user}
-            header={
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                        <h2 className="text-3xl font-brush text-gray-900">
-                            Depot Air Terdekat
-                        </h2>
-                    </div>
-                    <button
-                        onClick={() =>
-                            router.visit("/dashboard/pelanggan/orders")
-                        }
-                        className="glass-button px-6 py-2 rounded-xl text-white font-medium flex items-center space-x-2 hover:scale-105 transition-transform"
-                    >
-                        <ShoppingBag className="w-5 h-5" />
-                        <span>Pesanan Saya</span>
-                    </button>
-                </div>
-            }
-        >
+        <div className="flex min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
             <Head title="Dashboard Pelanggan" />
 
-            <div className="py-12">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    {/* Welcome message */}
-                    <div className="glass-card rounded-2xl p-6 mb-6">
-                        <h3 className="text-2xl font-brush text-gray-900 mb-2">
-                            Selamat Datang, {pelanggan.Nama} ! !
-                        </h3>
-                        <p className="text-gray-700">
+            {/* Sidebar */}
+            <Sidebar currentRoute="dashboard" />
+
+            {/* Main Content */}
+            <div className="flex-1 overflow-auto">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    {/* Welcome Section */}
+                    <div className="mb-8">
+                        <h1 className="text-4xl font-brush text-gray-900 mb-2">
+                            Selamat Datang, {pelanggan.Nama}!
+                        </h1>
+                        <p className="text-gray-600">
                             Temukan depot air minum terdekat dan pesan dengan
-                            mudah !
+                            mudah
                         </p>
+                    </div>
+
+                    {/* Statistics Cards */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <StatisticsCard
+                            icon={Package}
+                            label="Total Pesanan"
+                            count={statistics.total}
+                            color="blue"
+                        />
+                        <StatisticsCard
+                            icon={CheckCircle}
+                            label="Pesanan Selesai"
+                            count={statistics.completed}
+                            color="green"
+                        />
+                        <StatisticsCard
+                            icon={Clock}
+                            label="Pesanan Pending"
+                            count={statistics.pending}
+                            color="yellow"
+                        />
+                        <StatisticsCard
+                            icon={XCircle}
+                            label="Pesanan Dibatalkan"
+                            count={statistics.cancelled}
+                            color="red"
+                        />
                     </div>
 
                     {/* Filters */}
@@ -97,22 +124,34 @@ export default function DashboardPelanggan({
                         kecamatanList={kecamatanList}
                         selectedKelurahan={selectedKelurahan}
                         selectedKecamatan={selectedKecamatan}
+                        selectedBestSelling={selectedBestSelling}
                         onKelurahanChange={handleKelurahanChange}
                         onKecamatanChange={handleKecamatanChange}
+                        onBestSellingChange={handleBestSellingChange}
                         onReset={handleReset}
                     />
 
-                    {/* Depot grid */}
-                    {filteredDepots.length > 0 ? (
-                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {filteredDepots.map((depot) => (
-                                <DepotCard
-                                    key={depot.ID_Mitra}
-                                    depot={depot}
-                                    onClick={handleDepotClick}
-                                />
-                            ))}
-                        </div>
+                    {/* Depot Grid */}
+                    {depots.data && depots.data.length > 0 ? (
+                        <>
+                            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {depots.data.map((depot) => (
+                                    <DepotCard
+                                        key={depot.ID_Mitra}
+                                        depot={depot}
+                                        onClick={handleDepotClick}
+                                    />
+                                ))}
+                            </div>
+
+                            {/* Pagination */}
+                            <Pagination
+                                links={depots.links}
+                                from={depots.from}
+                                to={depots.to}
+                                total={depots.total}
+                            />
+                        </>
                     ) : (
                         <div className="glass-card rounded-2xl p-12 text-center">
                             <Droplets className="w-16 h-16 text-gray-400 mx-auto mb-4" />
@@ -127,6 +166,6 @@ export default function DashboardPelanggan({
                     )}
                 </div>
             </div>
-        </AuthenticatedLayout>
+        </div>
     );
 }

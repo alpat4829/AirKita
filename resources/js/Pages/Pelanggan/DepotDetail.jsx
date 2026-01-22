@@ -1,7 +1,7 @@
 import { Head, router } from "@inertiajs/react";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+import Sidebar from "@/Components/Sidebar";
 import ProductCard from "@/Components/ProductCard";
-import { ArrowLeft, MapPin, Clock, Phone, Mail } from "lucide-react";
+import { MapPin, Clock, Phone, Mail } from "lucide-react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 
@@ -37,26 +37,51 @@ export default function DepotDetail({ auth, depot, pelanggan }) {
     };
 
     return (
-        <AuthenticatedLayout
-            user={auth.user}
-            header={
-                <div className="flex items-center space-x-4">
-                    <button
-                        onClick={() => router.visit("/dashboard/pelanggan")}
-                        className="glass-button p-2 rounded-xl text-white hover:scale-110 transition-transform"
-                    >
-                        <ArrowLeft className="w-6 h-6" />
-                    </button>
-                    <h2 className="text-3xl font-brush text-gray-900">
-                        {depot.Nama_Mitra}
-                    </h2>
-                </div>
-            }
-        >
+        <div className="flex min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
             <Head title={`${depot.Nama_Mitra} - Produk`} />
 
-            <div className="py-12">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            {/* Sidebar */}
+            <Sidebar currentRoute="dashboard" />
+
+            {/* Main Content */}
+            <div className="flex-1 overflow-auto">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    {/* Depot Photo Banner */}
+                    {depot.Foto_Depot && (
+                        <div className="relative h-80 rounded-2xl overflow-hidden mb-8">
+                            <img
+                                src={`/storage/${depot.Foto_Depot}`}
+                                alt={depot.Nama_Mitra}
+                                className="w-full h-full object-cover"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
+
+                            {/* Depot name overlay */}
+                            <div className="absolute bottom-0 left-0 right-0 p-8">
+                                <h1 className="text-4xl font-brush text-white mb-2">
+                                    {depot.Nama_Mitra}
+                                </h1>
+                                <div className="flex items-center space-x-4 text-white/90">
+                                    <div className="flex items-center space-x-2">
+                                        <MapPin className="w-5 h-5" />
+                                        <span>{depot.kelurahan?.Nama_Kel}</span>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                        <Clock className="w-5 h-5" />
+                                        <span>
+                                            {depot.Jam_buka} - {depot.Jam_Tutup}
+                                        </span>
+                                    </div>
+                                    {depot.isOpen && (
+                                        <div className="flex items-center space-x-1 px-3 py-1 rounded-full bg-green-500/90 text-white text-sm font-medium">
+                                            <span>● Buka Sekarang</span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     {/* Depot info card */}
                     <div className="glass-card rounded-2xl p-6 mb-8">
                         <div className="grid md:grid-cols-2 gap-6">
@@ -82,6 +107,21 @@ export default function DepotDetail({ auth, depot, pelanggan }) {
                                             {depot.Jam_buka} - {depot.Jam_Tutup}
                                         </span>
                                     </div>
+                                    {depot.Pemilik && (
+                                        <div className="flex items-center space-x-3">
+                                            <span className="w-5 h-5 flex items-center justify-center">
+                                                👤
+                                            </span>
+                                            <div>
+                                                <p className="text-sm text-gray-500">
+                                                    Pemilik
+                                                </p>
+                                                <p className="text-gray-700 font-medium">
+                                                    {depot.Pemilik}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                             <div>
@@ -105,6 +145,18 @@ export default function DepotDetail({ auth, depot, pelanggan }) {
                             </div>
                         </div>
                     </div>
+
+                    {/* Depot Description */}
+                    {depot.Deskripsi_Depot && (
+                        <div className="glass-card rounded-2xl p-6 mb-8">
+                            <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                                Tentang Depot
+                            </h3>
+                            <p className="text-gray-700 leading-relaxed whitespace-pre-line">
+                                {depot.Deskripsi_Depot}
+                            </p>
+                        </div>
+                    )}
 
                     {/* Products section */}
                     <div className="mb-6">
@@ -135,6 +187,6 @@ export default function DepotDetail({ auth, depot, pelanggan }) {
                     )}
                 </div>
             </div>
-        </AuthenticatedLayout>
+        </div>
     );
 }

@@ -6,10 +6,17 @@ export default function DepotFilters({
     kecamatanList,
     selectedKelurahan,
     selectedKecamatan,
+    selectedBestSelling,
     onKelurahanChange,
     onKecamatanChange,
+    onBestSellingChange,
     onReset,
 }) {
+    const bestSellingOptions = [
+        { value: "", label: "Semua Depot" },
+        { value: "true", label: "Terlaris" },
+    ];
+
     return (
         <div className="glass-card rounded-2xl p-6 mb-6 relative z-50">
             <div className="flex items-center space-x-2 mb-4">
@@ -19,7 +26,7 @@ export default function DepotFilters({
                 </h3>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-4">
+            <div className="grid md:grid-cols-4 gap-4">
                 {/* Kelurahan filter */}
                 <div className="relative z-40">
                     <GlassSelect
@@ -45,6 +52,17 @@ export default function DepotFilters({
                             label: k.Nama_Kec,
                         }))}
                         placeholder="Semua Kecamatan"
+                    />
+                </div>
+
+                {/* Best selling filter */}
+                <div className="relative z-20">
+                    <GlassSelect
+                        label="Kategori"
+                        value={selectedBestSelling}
+                        onChange={onBestSellingChange}
+                        options={bestSellingOptions}
+                        placeholder="Semua Kategori"
                     />
                 </div>
 

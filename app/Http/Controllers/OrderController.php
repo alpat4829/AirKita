@@ -19,11 +19,29 @@ class OrderController extends Controller
         $pelanggan = Auth::user()->pelanggan;
         $produk = Produk::findOrFail($request->id_produk);
 
+        // Check if there's an existing pending order for this product
+        $existingOrder = Pesanan::where('ID_Pelanggan', $pelanggan->ID_Pelanggan)
+            ->where('ID_Produk', $produk->ID_Produk)
+            ->where('Status_Pembayaran', 'Pending')
+            ->where('Status_Pesanan', 'Menunggu Pembayaran')
+            ->whereDate('Tanggal_Pesan', today())
+            ->first();
+
+        if ($existingOrder) {
+            // Reuse existing order if snap_token is still valid
+            if ($existingOrder->snap_token) {
+                return response()->json([
+                    'snap_token' => $existingOrder->snap_token,
+                    'order_id' => $existingOrder->ID_Pesanan
+                ]);
+            }
+        }
+
         // Calculate total price
         $totalHarga = $produk->Harga * $request->jumlah;
 
-        // Create order
-        $pesanan = Pesanan::create([
+        // Create or update order
+        $pesanan = $existingOrder ?? Pesanan::create([
             'ID_Pelanggan' => $pelanggan->ID_Pelanggan,
             'ID_Produk' => $produk->ID_Produk,
             'Tanggal_Pesan' => now(),

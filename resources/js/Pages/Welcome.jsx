@@ -69,7 +69,7 @@ export default function Welcome({ auth }) {
                                 href="/"
                                 className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
                             >
-                                <Droplets className="w-8 h-8 text-white" />
+                                <Droplets className="w-8 h-8 text-water-500" />
                                 <span className="text-3xl font-brush text-white tracking-wide">
                                     Airkita
                                 </span>
@@ -178,7 +178,7 @@ export default function Welcome({ auth }) {
                                             size="lg"
                                             className="w-full sm:w-auto shadow-xl hover:shadow-2xl"
                                         >
-                                            Pesan Sekarang
+                                            Mulai Sekarang
                                         </Button>
                                     </Link>
                                     <a href="#features">
