@@ -15,6 +15,8 @@ class Mitra extends Model
         'Pemilik',
         'No_HP',
         'Alamat',
+        'Latitude',
+        'Longitude',
         'Email',
         'Foto_Depot',
         'Deskripsi_Depot',

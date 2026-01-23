@@ -1,11 +1,18 @@
 import { Head, router } from "@inertiajs/react";
 import Sidebar from "@/Components/Sidebar";
 import ProductCard from "@/Components/ProductCard";
+import GoogleMapDisplay from "@/Components/GoogleMapDisplay";
 import { MapPin, Clock, Phone, Mail } from "lucide-react";
+import { getWhatsAppUrl } from "@/utils/maps";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 
-export default function DepotDetail({ auth, depot, pelanggan }) {
+export default function DepotDetail({
+    auth,
+    depot,
+    pelanggan,
+    googleMapsApiKey,
+}) {
     const handleOrder = async (product, quantity) => {
         try {
             const response = await axios.post("/dashboard/pelanggan/order", {
@@ -15,8 +22,18 @@ export default function DepotDetail({ auth, depot, pelanggan }) {
 
             // Open Midtrans payment popup
             window.snap.pay(response.data.snap_token, {
-                onSuccess: function (result) {
+                onSuccess: async function (result) {
                     toast.success("Pembayaran berhasil!");
+
+                    // Verify and update payment status
+                    try {
+                        await axios.post("/payment/verify-success", {
+                            order_id: result.order_id,
+                        });
+                    } catch (error) {
+                        console.error("Payment verification error:", error);
+                    }
+
                     router.visit("/dashboard/pelanggan/orders");
                 },
                 onPending: function (result) {
@@ -129,12 +146,25 @@ export default function DepotDetail({ auth, depot, pelanggan }) {
                                     Kontak
                                 </h3>
                                 <div className="space-y-3">
-                                    <div className="flex items-center space-x-3">
-                                        <Phone className="w-5 h-5 text-water-500" />
-                                        <span className="text-gray-700">
-                                            {depot.No_HP}
-                                        </span>
-                                    </div>
+                                    <a
+                                        href={getWhatsAppUrl(
+                                            depot.No_HP,
+                                            `Halo ${depot.Nama_Mitra}, saya ingin memesan air`,
+                                        )}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center space-x-3 hover:bg-green-50 p-2 rounded-lg transition-colors cursor-pointer group"
+                                    >
+                                        <Phone className="w-5 h-5 text-green-600" />
+                                        <div className="flex-1">
+                                            <span className="text-gray-700">
+                                                {depot.No_HP}
+                                            </span>
+                                            <span className="ml-2 text-xs text-green-600 font-medium group-hover:underline">
+                                                Chat WhatsApp →
+                                            </span>
+                                        </div>
+                                    </a>
                                     <div className="flex items-center space-x-3">
                                         <Mail className="w-5 h-5 text-water-500" />
                                         <span className="text-gray-700">
@@ -146,15 +176,42 @@ export default function DepotDetail({ auth, depot, pelanggan }) {
                         </div>
                     </div>
 
-                    {/* Depot Description */}
-                    {depot.Deskripsi_Depot && (
-                        <div className="glass-card rounded-2xl p-6 mb-8">
-                            <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                                Tentang Depot
-                            </h3>
-                            <p className="text-gray-700 leading-relaxed whitespace-pre-line">
-                                {depot.Deskripsi_Depot}
-                            </p>
+                    {/* Depot Description & Map - Side by Side */}
+                    {(depot.Deskripsi_Depot ||
+                        (depot.Latitude && depot.Longitude)) && (
+                        <div className="grid md:grid-cols-2 gap-6 mb-8">
+                            {/* Description Card */}
+                            {depot.Deskripsi_Depot && (
+                                <div className="glass-card rounded-2xl p-6">
+                                    <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                                        Tentang Depot
+                                    </h3>
+                                    <p className="text-gray-700 leading-relaxed whitespace-pre-line">
+                                        {depot.Deskripsi_Depot}
+                                    </p>
+                                </div>
+                            )}
+
+                            {/* Map Card */}
+                            {depot.Latitude && depot.Longitude && (
+                                <div className="glass-card rounded-2xl p-6">
+                                    <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                                        Lokasi Depot
+                                    </h3>
+                                    <div className="h-64">
+                                        <GoogleMapDisplay
+                                            latitude={depot.Latitude}
+                                            longitude={depot.Longitude}
+                                            depotName={depot.Nama_Mitra}
+                                            apiKey={googleMapsApiKey}
+                                        />
+                                    </div>
+                                    <p className="text-xs text-gray-500 mt-2">
+                                        Klik marker untuk navigasi di Google
+                                        Maps
+                                    </p>
+                                </div>
+                            )}
                         </div>
                     )}
 

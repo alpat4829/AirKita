@@ -37,6 +37,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::post('/profile/upload-depot-photo', [ProfileController::class, 'uploadDepotPhoto'])->name('profile.uploadDepotPhoto');
     Route::post('/profile/update-depot-description', [ProfileController::class, 'updateDepotDescription'])->name('profile.updateDepotDescription');
+    Route::post('/profile/update-depot-location', [ProfileController::class, 'updateDepotLocation'])->name('profile.updateDepotLocation');
 });
 
 // Pelanggan Routes
@@ -52,6 +53,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/dashboard/pelanggan/reorder/{id}', [OrderController::class, 'reorder'])->name('pelanggan.order.reorder');
     Route::post('/dashboard/pelanggan/order/{id}/cancel', [PelangganOrderController::class, 'cancel'])->name('pelanggan.order.cancel');
     Route::post('/dashboard/pelanggan/order/{id}/continue-payment', [PelangganOrderController::class, 'continuePayment'])->name('pelanggan.order.continue');
+
+    // Invoice routes for pelanggan
+    Route::get('/dashboard/pelanggan/invoices', [\App\Http\Controllers\InvoiceController::class, 'pelangganIndex'])->name('pelanggan.invoices');
+    Route::get('/dashboard/pelanggan/invoices/{id}', [\App\Http\Controllers\InvoiceController::class, 'show'])->name('pelanggan.invoices.show');
+    Route::get('/dashboard/pelanggan/invoices/{id}/download', [\App\Http\Controllers\InvoiceController::class, 'download'])->name('pelanggan.invoices.download');
+    Route::get('/dashboard/pelanggan/invoices/{id}/view', [\App\Http\Controllers\InvoiceController::class, 'view'])->name('pelanggan.invoices.view');
 });
 
 // Mitra Routes
@@ -77,6 +84,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard/mitra/orders', [MitraOrderController::class, 'history'])->name('mitra.orders');
     Route::post('/dashboard/mitra/order/{id}/accept', [MitraOrderController::class, 'accept'])->name('mitra.order.accept');
     Route::post('/dashboard/mitra/order/{id}/reject', [MitraOrderController::class, 'reject'])->name('mitra.order.reject');
+    Route::post('/dashboard/mitra/order/{id}/complete', [MitraOrderController::class, 'complete'])->name('mitra.order.complete');
+
+    // Invoice routes for mitra
+    Route::get('/dashboard/mitra/invoices', [\App\Http\Controllers\InvoiceController::class, 'mitraIndex'])->name('mitra.invoices');
+    Route::get('/dashboard/mitra/invoices/{id}', [\App\Http\Controllers\InvoiceController::class, 'show'])->name('mitra.invoices.show');
+    Route::get('/dashboard/mitra/invoices/{id}/download', [\App\Http\Controllers\InvoiceController::class, 'download'])->name('mitra.invoices.download');
+    Route::get('/dashboard/mitra/invoices/{id}/view', [\App\Http\Controllers\InvoiceController::class, 'view'])->name('mitra.invoices.view');
 });
+
+// Payment callback route (no auth middleware for Midtrans webhook)
+Route::post('/payment/callback', [\App\Http\Controllers\PaymentCallbackController::class, 'handle'])->name('payment.callback');
+
+// Payment success verification from frontend (with auth)
+Route::post('/payment/verify-success', [\App\Http\Controllers\PaymentCallbackController::class, 'handleFrontendSuccess'])->middleware('auth')->name('payment.verify');
 
 require __DIR__ . '/auth.php';

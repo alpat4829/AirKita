@@ -1,7 +1,7 @@
 import { Head } from "@inertiajs/react";
 import MitraSidebar from "@/Components/MitraSidebar";
 import StatisticsCard from "@/Components/StatisticsCard";
-import SimpleBarChart from "@/Components/SimpleBarChart";
+import AreaLineChart from "@/Components/AreaLineChart";
 import IncomingOrderCard from "@/Components/IncomingOrderCard";
 import {
     DollarSign,
@@ -32,9 +32,9 @@ export default function MitraDashboard({
 
     const formatPriceShort = (price) => {
         if (price >= 1000000) {
-            return `Rp ${(price / 1000000).toFixed(1)}jt`;
+            return `Rp ${(price / 1000000).toFixed(1)}M`;
         } else if (price >= 1000) {
-            return `Rp ${(price / 1000).toFixed(0)}rb`;
+            return `Rp ${(price / 1000).toFixed(0)}K`;
         }
         return `Rp ${price}`;
     };
@@ -137,11 +137,11 @@ export default function MitraDashboard({
                                 <DollarSign className="w-5 h-5 text-green-600" />
                                 <span>Pendapatan 7 Hari Terakhir</span>
                             </h3>
-                            <SimpleBarChart
+                            <AreaLineChart
                                 data={chartData}
                                 dataKey="revenue"
-                                label="Pendapatan"
                                 formatValue={formatPriceShort}
+                                color="green"
                             />
                         </div>
 
@@ -151,10 +151,10 @@ export default function MitraDashboard({
                                 <ShoppingBag className="w-5 h-5 text-blue-600" />
                                 <span>Pesanan 7 Hari Terakhir</span>
                             </h3>
-                            <SimpleBarChart
+                            <AreaLineChart
                                 data={chartData}
                                 dataKey="orders"
-                                label="Pesanan"
+                                color="blue"
                             />
                         </div>
                     </div>

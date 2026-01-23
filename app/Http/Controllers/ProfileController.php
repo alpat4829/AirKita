@@ -35,7 +35,8 @@ class ProfileController extends Controller
             'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
             'status' => session('status'),
             'mitra' => $mitra,
-            'isOpen' => $isOpen
+            'isOpen' => $isOpen,
+            'googleMapsApiKey' => config('services.google_maps.api_key')
         ]);
     }
 
@@ -124,5 +125,30 @@ class ProfileController extends Controller
         $mitra->update(['Deskripsi_Depot' => $request->deskripsi_depot]);
 
         return Redirect::back()->with('success', 'Deskripsi depot berhasil diupdate');
+    }
+
+    /**
+     * Update depot location for mitra
+     */
+    public function updateDepotLocation(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'latitude' => 'required|numeric|between:-90,90',
+            'longitude' => 'required|numeric|between:-180,180',
+        ]);
+
+        $user = $request->user();
+        $mitra = $user->mitra;
+
+        if (!$mitra) {
+            return Redirect::back()->with('error', 'Data mitra tidak ditemukan');
+        }
+
+        $mitra->update([
+            'Latitude' => $request->latitude,
+            'Longitude' => $request->longitude,
+        ]);
+
+        return Redirect::back()->with('success', 'Lokasi depot berhasil diupdate');
     }
 }

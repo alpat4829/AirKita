@@ -1,4 +1,4 @@
-import { Head } from "@inertiajs/react";
+import { Head, usePage } from "@inertiajs/react";
 import Sidebar from "@/Components/Sidebar";
 import MitraSidebar from "@/Components/MitraSidebar";
 import DeleteUserForm from "./Partials/DeleteUserForm";
@@ -6,10 +6,13 @@ import UpdatePasswordForm from "./Partials/UpdatePasswordForm";
 import UpdateProfileInformationForm from "./Partials/UpdateProfileInformationForm";
 import UploadDepotPhotoForm from "./Partials/UploadDepotPhotoForm";
 import DepotManagement from "./Partials/DepotManagement";
+import DepotLocationForm from "./Partials/DepotLocationForm";
 
 export default function Edit({ auth, mustVerifyEmail, status, mitra, isOpen }) {
     // Determine if user is mitra or pelanggan
     const isMitra = !!mitra;
+    const { props } = usePage();
+    const googleMapsApiKey = props.googleMapsApiKey || "";
 
     return (
         <div className="flex min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
@@ -54,6 +57,14 @@ export default function Edit({ auth, mustVerifyEmail, status, mitra, isOpen }) {
                                 <div className="glass-card rounded-2xl p-6">
                                     <UploadDepotPhotoForm
                                         mitra={mitra}
+                                        className="max-w-xl"
+                                    />
+                                </div>
+
+                                <div className="glass-card rounded-2xl p-6">
+                                    <DepotLocationForm
+                                        mitra={mitra}
+                                        apiKey={googleMapsApiKey}
                                         className="max-w-xl"
                                     />
                                 </div>

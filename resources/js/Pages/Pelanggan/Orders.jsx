@@ -59,8 +59,18 @@ export default function Orders({ auth, orders, pelanggan }) {
 
             // Open Midtrans payment popup
             window.snap.pay(response.data.snap_token, {
-                onSuccess: function (result) {
+                onSuccess: async function (result) {
                     toast.success("Pembayaran berhasil!");
+
+                    // Verify and update payment status
+                    try {
+                        await axios.post("/payment/verify-success", {
+                            order_id: result.order_id,
+                        });
+                    } catch (error) {
+                        console.error("Payment verification error:", error);
+                    }
+
                     router.reload();
                 },
                 onPending: function (result) {
@@ -103,8 +113,18 @@ export default function Orders({ auth, orders, pelanggan }) {
 
             // Open Midtrans payment popup with existing token
             window.snap.pay(response.data.snap_token, {
-                onSuccess: function (result) {
+                onSuccess: async function (result) {
                     toast.success("Pembayaran berhasil!");
+
+                    // Verify and update payment status
+                    try {
+                        await axios.post("/payment/verify-success", {
+                            order_id: result.order_id,
+                        });
+                    } catch (error) {
+                        console.error("Payment verification error:", error);
+                    }
+
                     router.reload();
                 },
                 onPending: function (result) {
@@ -128,7 +148,7 @@ export default function Orders({ auth, orders, pelanggan }) {
 
     const getPaymentStatusBadge = (status) => {
         const config = {
-            Success: {
+            Paid: {
                 bg: "bg-green-100",
                 text: "text-green-700",
                 label: "Lunas",
@@ -271,6 +291,21 @@ export default function Orders({ auth, orders, pelanggan }) {
 
                                                 {/* Action buttons */}
                                                 <div className="flex flex-wrap gap-2 justify-end">
+                                                    {/* View Invoice - for paid orders */}
+                                                    {order.Status_Pembayaran ===
+                                                        "Paid" && (
+                                                        <a
+                                                            href={`/dashboard/pelanggan/invoices/${order.ID_Pesanan}/view`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="flex items-center space-x-2 px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors text-sm font-medium"
+                                                        >
+                                                            <span>
+                                                                Lihat Invoice
+                                                            </span>
+                                                        </a>
+                                                    )}
+
                                                     {/* Continue Payment - for pending payments with snap token */}
                                                     {order.Status_Pembayaran ===
                                                         "Pending" &&

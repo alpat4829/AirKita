@@ -109,9 +109,20 @@ export default function IncomingOrderCard({ order, onAccept, onReject }) {
 
                 {/* Right side - Actions */}
                 <div className="flex md:flex-col gap-2">
+                    {/* View Invoice button for paid orders */}
+                    {order.Status_Pembayaran === "Paid" && (
+                        <a
+                            href={`/dashboard/mitra/invoices/${order.ID_Pesanan}/view`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex-1 md:flex-none px-6 py-3 bg-blue-500 text-white rounded-xl font-medium hover:bg-blue-600 transition-colors text-center"
+                        >
+                            Lihat Invoice
+                        </a>
+                    )}
                     <button
                         onClick={() => onAccept(order.ID_Pesanan)}
-                        disabled={order.Status_Pembayaran !== "Success"}
+                        disabled={order.Status_Pembayaran !== "Paid"}
                         className="flex-1 md:flex-none px-6 py-3 bg-green-500 text-white rounded-xl font-medium hover:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         Terima

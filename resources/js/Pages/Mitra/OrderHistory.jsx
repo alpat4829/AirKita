@@ -58,8 +58,36 @@ export default function OrderHistory({ auth, orders, mitra, filters, isOpen }) {
         router.get("/dashboard/mitra/orders");
     };
 
+    const handleComplete = (orderId) => {
+        if (
+            confirm(
+                "Apakah Anda yakin ingin menandai pesanan ini sebagai selesai?",
+            )
+        ) {
+            router.post(
+                `/dashboard/mitra/order/${orderId}/complete`,
+                {},
+                {
+                    onSuccess: () => {
+                        alert("Pesanan berhasil diselesaikan!");
+                    },
+                    onError: () => {
+                        alert(
+                            "Gagal menyelesaikan pesanan. Silakan coba lagi.",
+                        );
+                    },
+                },
+            );
+        }
+    };
+
     const getPaymentStatusBadge = (paymentStatus) => {
         const config = {
+            Paid: {
+                bg: "bg-green-100",
+                text: "text-green-700",
+                label: "Lunas",
+            },
             Success: {
                 bg: "bg-green-100",
                 text: "text-green-700",
@@ -230,6 +258,37 @@ export default function OrderHistory({ auth, orders, mitra, filters, isOpen }) {
                                                 {getPaymentStatusBadge(
                                                     order.Status_Pembayaran,
                                                 )}
+
+                                                {/* Action buttons */}
+                                                <div className="flex flex-col gap-2 mt-2">
+                                                    {/* View Invoice button for paid orders */}
+                                                    {order.Status_Pembayaran ===
+                                                        "Paid" && (
+                                                        <a
+                                                            href={`/dashboard/mitra/invoices/${order.ID_Pesanan}/view`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="px-4 py-2 bg-blue-500 text-white rounded-xl font-medium hover:bg-blue-600 transition-colors text-sm text-center"
+                                                        >
+                                                            Lihat Invoice
+                                                        </a>
+                                                    )}
+
+                                                    {/* Complete button for orders being processed */}
+                                                    {order.Status_Pesanan ===
+                                                        "Diproses Depot" && (
+                                                        <button
+                                                            onClick={() =>
+                                                                handleComplete(
+                                                                    order.ID_Pesanan,
+                                                                )
+                                                            }
+                                                            className="px-4 py-2 bg-green-500 text-white rounded-xl font-medium hover:bg-green-600 transition-colors text-sm"
+                                                        >
+                                                            Selesai
+                                                        </button>
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

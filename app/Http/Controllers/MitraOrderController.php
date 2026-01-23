@@ -40,6 +40,22 @@ class MitraOrderController extends Controller
         return response()->json(['message' => 'Pesanan ditolak']);
     }
 
+    public function complete($id)
+    {
+        $mitra = Auth::user()->mitra;
+
+        $pesanan = Pesanan::whereHas('produk', function ($query) use ($mitra) {
+            $query->where('ID_Mitra', $mitra->ID_Mitra);
+        })
+            ->findOrFail($id);
+
+        $pesanan->update([
+            'Status_Pesanan' => 'Selesai'
+        ]);
+
+        return redirect()->back()->with('success', 'Pesanan berhasil diselesaikan!');
+    }
+
     public function history(Request $request)
     {
         $mitra = Auth::user()->mitra;

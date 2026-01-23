@@ -115,7 +115,8 @@ class PelangganDashboardController extends Controller
 
         return Inertia::render('Pelanggan/DepotDetail', [
             'depot' => $depot,
-            'pelanggan' => $pelanggan
+            'pelanggan' => $pelanggan,
+            'googleMapsApiKey' => config('services.google_maps.api_key')
         ]);
     }
 }

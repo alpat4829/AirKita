@@ -27,7 +27,7 @@ export default function StatisticsCard({
                     <p className="text-sm font-medium text-gray-600 mb-1">
                         {label}
                     </p>
-                    <p className="text-4xl font-bold text-gray-900">{count}</p>
+                    <p className="text-3xl font-bold text-gray-900">{count}</p>
                 </div>
                 <div
                     className={`w-16 h-16 ${iconBgClasses[color]} rounded-2xl flex items-center justify-center`}
