@@ -15,7 +15,7 @@ class PelangganOrderController extends Controller
         $pelanggan = Auth::user()->pelanggan;
 
         $ordersQuery = Pesanan::where('ID_Pelanggan', $pelanggan->ID_Pelanggan)
-            ->with(['produk.mitra', 'produk'])
+            ->with(['produk.mitra', 'produk', 'invoice'])
             ->orderBy('Tanggal_Pesan', 'desc');
 
         // Apply time-based filter

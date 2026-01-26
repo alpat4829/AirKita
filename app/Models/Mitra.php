@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Mitra extends Model
 {
@@ -12,6 +13,7 @@ class Mitra extends Model
         'user_id',
         'ID_KELURAHAN',
         'Nama_Mitra',
+        'slug',
         'Pemilik',
         'No_HP',
         'Alamat',
@@ -25,6 +27,38 @@ class Mitra extends Model
         'Status',
         'Manual_Status'
     ];
+
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
+
+    /**
+     * Boot the model and auto-generate slug.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($mitra) {
+            if (empty($mitra->slug)) {
+                $slug = Str::slug($mitra->Nama_Mitra);
+
+                // Ensure uniqueness
+                $originalSlug = $slug;
+                $counter = 1;
+                while (static::where('slug', $slug)->where('ID_Mitra', '!=', $mitra->ID_Mitra)->exists()) {
+                    $slug = $originalSlug . '-' . $counter;
+                    $counter++;
+                }
+
+                $mitra->slug = $slug;
+            }
+        });
+    }
 
     public function kelurahan()
     {

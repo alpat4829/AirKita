@@ -280,6 +280,7 @@ export default function Welcome({ auth }) {
                             <div
                                 ref={feature1Ref}
                                 className="group p-8 rounded-2xl bg-gradient-to-br from-water-50 to-primary-50 hover:shadow-xl transition-all duration-300 hover:-translate-y-2 fade-in-up"
+                                
                             >
                                 <div className="w-16 h-16 bg-gradient-to-br from-water-500 to-primary-500 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                                     <MapPin className="w-8 h-8 text-white" />

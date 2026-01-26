@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Invoice;
 use App\Services\InvoiceService;
+use App\Helpers\InvoiceHasher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -54,10 +55,15 @@ class InvoiceController extends Controller
     }
 
     /**
-     * Show invoice detail by order ID
+     * Show invoice detail by hashed ID
      */
-    public function show($orderId)
+    public function show($hashedId)
     {
+        $orderId = InvoiceHasher::decode($hashedId);
+        if (!$orderId) {
+            abort(404, 'Invoice not found');
+        }
+
         $invoice = Invoice::with(['pesanan.produk.mitra', 'pelanggan', 'mitra'])
             ->where('id_pesanan', $orderId)
             ->firstOrFail();
@@ -77,10 +83,15 @@ class InvoiceController extends Controller
     }
 
     /**
-     * Download invoice as PDF by order ID
+     * Download invoice as PDF by hashed ID
      */
-    public function download($orderId)
+    public function download($hashedId)
     {
+        $orderId = InvoiceHasher::decode($hashedId);
+        if (!$orderId) {
+            abort(404, 'Invoice not found');
+        }
+
         $invoice = Invoice::with(['pesanan.produk.mitra', 'pelanggan', 'mitra'])
             ->where('id_pesanan', $orderId)
             ->firstOrFail();
@@ -100,10 +111,15 @@ class InvoiceController extends Controller
     }
 
     /**
-     * View invoice as PDF in browser by order ID
+     * View invoice as PDF in browser by hashed ID
      */
-    public function view($orderId)
+    public function view($hashedId)
     {
+        $orderId = InvoiceHasher::decode($hashedId);
+        if (!$orderId) {
+            abort(404, 'Invoice not found');
+        }
+
         $invoice = Invoice::with(['pesanan.produk.mitra', 'pelanggan', 'mitra'])
             ->where('id_pesanan', $orderId)
             ->firstOrFail();

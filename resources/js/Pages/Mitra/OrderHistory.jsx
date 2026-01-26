@@ -263,16 +263,17 @@ export default function OrderHistory({ auth, orders, mitra, filters, isOpen }) {
                                                 <div className="flex flex-col gap-2 mt-2">
                                                     {/* View Invoice button for paid orders */}
                                                     {order.Status_Pembayaran ===
-                                                        "Paid" && (
-                                                        <a
-                                                            href={`/dashboard/mitra/invoices/${order.ID_Pesanan}/view`}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            className="px-4 py-2 bg-blue-500 text-white rounded-xl font-medium hover:bg-blue-600 transition-colors text-sm text-center"
-                                                        >
-                                                            Lihat Invoice
-                                                        </a>
-                                                    )}
+                                                        "Paid" &&
+                                                        order.invoice && (
+                                                            <a
+                                                                href={`/dashboard/mitra/invoices/${order.invoice.hashed_id}/view`}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="px-4 py-2 bg-blue-500 text-white rounded-xl font-medium hover:bg-blue-600 transition-colors text-sm text-center"
+                                                            >
+                                                                Lihat Invoice
+                                                            </a>
+                                                        )}
 
                                                     {/* Complete button for orders being processed */}
                                                     {order.Status_Pesanan ===

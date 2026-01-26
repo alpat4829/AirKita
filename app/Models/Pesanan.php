@@ -30,4 +30,9 @@ class Pesanan extends Model
     {
         return $this->belongsTo(Produk::class, 'ID_Produk', 'ID_Produk');
     }
+
+    public function invoice()
+    {
+        return $this->hasOne(Invoice::class, 'id_pesanan', 'ID_Pesanan');
+    }
 }

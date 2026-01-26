@@ -63,7 +63,7 @@ class MitraOrderController extends Controller
         $query = Pesanan::whereHas('produk', function ($q) use ($mitra) {
             $q->where('ID_Mitra', $mitra->ID_Mitra);
         })
-            ->with(['pelanggan.kelurahan', 'produk']);
+            ->with(['pelanggan.kelurahan', 'produk', 'invoice']);
 
         // Time-based filter
         if ($request->has('time_filter') && $request->time_filter) {

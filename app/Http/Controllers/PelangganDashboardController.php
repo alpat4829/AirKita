@@ -27,7 +27,7 @@ class PelangganDashboardController extends Controller
             ->where('Status_Pesanan', 'Selesai')
             ->count();
         $pendingOrders = \App\Models\Pesanan::where('ID_Pelanggan', $pelanggan->ID_Pelanggan)
-            ->where('Status_Pesanan', 'Diproses')
+            ->whereIn('Status_Pesanan', ['Menunggu Pembayaran', 'Diproses', 'Diproses Depot'])
             ->count();
         $cancelledOrders = \App\Models\Pesanan::where('ID_Pelanggan', $pelanggan->ID_Pelanggan)
             ->where('Status_Pesanan', 'Dibatalkan')
@@ -99,9 +99,9 @@ class PelangganDashboardController extends Controller
         ]);
     }
 
-    public function show($id)
+    public function show(Mitra $mitra)
     {
-        $depot = Mitra::with(['produk', 'kelurahan'])->findOrFail($id);
+        $depot = $mitra->load(['produk', 'kelurahan']);
         $pelanggan = Auth::user()->pelanggan;
 
         // Calculate if depot is currently open

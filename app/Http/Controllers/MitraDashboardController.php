@@ -27,7 +27,7 @@ class MitraDashboardController extends Controller
             ->whereDate('Tanggal_Pesan', Carbon::today())
             ->where('Status_Pembayaran', 'Paid') // Only show paid orders
             ->where('Status_Pesanan', 'Diproses') // Only show orders waiting to be accepted
-            ->with(['pelanggan.kelurahan', 'produk'])
+            ->with(['pelanggan.kelurahan', 'produk', 'invoice'])
             ->orderBy('Tanggal_Pesan', 'desc')
             ->get();
 

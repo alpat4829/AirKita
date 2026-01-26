@@ -66,7 +66,7 @@ export default function DashboardPelanggan({
     };
 
     const handleDepotClick = (depot) => {
-        router.visit(`/dashboard/pelanggan/depot/${depot.ID_Mitra}`);
+        router.visit(`/dashboard/pelanggan/depot/${depot.slug}`);
     };
 
     return (

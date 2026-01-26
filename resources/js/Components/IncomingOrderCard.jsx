@@ -110,9 +110,9 @@ export default function IncomingOrderCard({ order, onAccept, onReject }) {
                 {/* Right side - Actions */}
                 <div className="flex md:flex-col gap-2">
                     {/* View Invoice button for paid orders */}
-                    {order.Status_Pembayaran === "Paid" && (
+                    {order.Status_Pembayaran === "Paid" && order.invoice && (
                         <a
-                            href={`/dashboard/mitra/invoices/${order.ID_Pesanan}/view`}
+                            href={`/dashboard/mitra/invoices/${order.invoice.hashed_id}/view`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex-1 md:flex-none px-6 py-3 bg-blue-500 text-white rounded-xl font-medium hover:bg-blue-600 transition-colors text-center"

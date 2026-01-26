@@ -45,9 +45,9 @@ use App\Http\Controllers\PelangganDashboardController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PelangganOrderController;
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', 'role:pelanggan'])->group(function () {
     Route::get('/dashboard/pelanggan', [PelangganDashboardController::class, 'index'])->name('pelanggan.dashboard');
-    Route::get('/dashboard/pelanggan/depot/{id}', [PelangganDashboardController::class, 'show'])->name('pelanggan.depot.show');
+    Route::get('/dashboard/pelanggan/depot/{mitra}', [PelangganDashboardController::class, 'show'])->name('pelanggan.depot.show');
     Route::get('/dashboard/pelanggan/orders', [PelangganOrderController::class, 'index'])->name('pelanggan.orders');
     Route::post('/dashboard/pelanggan/order', [OrderController::class, 'store'])->name('pelanggan.order.store');
     Route::post('/dashboard/pelanggan/reorder/{id}', [OrderController::class, 'reorder'])->name('pelanggan.order.reorder');
@@ -66,7 +66,7 @@ use App\Http\Controllers\MitraDashboardController;
 use App\Http\Controllers\MitraProductController;
 use App\Http\Controllers\MitraOrderController;
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', 'role:mitra'])->group(function () {
     Route::get('/dashboard/mitra', [MitraDashboardController::class, 'index'])->name('mitra.dashboard');
 
     // Depot Controls

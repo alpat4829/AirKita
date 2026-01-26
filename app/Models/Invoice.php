@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Helpers\InvoiceHasher;
 
 class Invoice extends Model
 {
@@ -24,6 +25,16 @@ class Invoice extends Model
     protected $casts = [
         'payment_date' => 'datetime',
     ];
+
+    protected $appends = ['hashed_id'];
+
+    /**
+     * Get hashed ID for URLs
+     */
+    public function getHashedIdAttribute(): string
+    {
+        return InvoiceHasher::encode($this->id_pesanan);
+    }
 
     public function pesanan()
     {

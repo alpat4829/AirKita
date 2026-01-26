@@ -293,18 +293,20 @@ export default function Orders({ auth, orders, pelanggan }) {
                                                 <div className="flex flex-wrap gap-2 justify-end">
                                                     {/* View Invoice - for paid orders */}
                                                     {order.Status_Pembayaran ===
-                                                        "Paid" && (
-                                                        <a
-                                                            href={`/dashboard/pelanggan/invoices/${order.ID_Pesanan}/view`}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            className="flex items-center space-x-2 px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors text-sm font-medium"
-                                                        >
-                                                            <span>
-                                                                Lihat Invoice
-                                                            </span>
-                                                        </a>
-                                                    )}
+                                                        "Paid" &&
+                                                        order.invoice && (
+                                                            <a
+                                                                href={`/dashboard/pelanggan/invoices/${order.invoice.hashed_id}/view`}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="flex items-center space-x-2 px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors text-sm font-medium"
+                                                            >
+                                                                <span>
+                                                                    Lihat
+                                                                    Invoice
+                                                                </span>
+                                                            </a>
+                                                        )}
 
                                                     {/* Continue Payment - for pending payments with snap token */}
                                                     {order.Status_Pembayaran ===
