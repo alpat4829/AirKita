@@ -10,6 +10,7 @@ import {
     CheckCircle,
     Clock,
     ShoppingBag,
+    XCircle,
 } from "lucide-react";
 import { toast } from "react-hot-toast";
 import axios from "axios";
@@ -21,6 +22,8 @@ export default function MitraDashboard({
     statistics,
     chartData,
     isOpen,
+    approvalStatus,
+    rejectionReason,
 }) {
     const formatPrice = (price) => {
         return new Intl.NumberFormat("id-ID", {
@@ -84,6 +87,65 @@ export default function MitraDashboard({
                             Pantau performa depot Anda secara real-time
                         </p>
                     </div>
+
+                    {/* Approval Status Banners */}
+                    {approvalStatus === "pending" && (
+                        <div className="glass-card rounded-2xl p-6 mb-8 border-2 border-yellow-300 bg-yellow-50/50">
+                            <div className="flex items-start space-x-4">
+                                <div className="flex-shrink-0">
+                                    <Clock className="w-8 h-8 text-yellow-600" />
+                                </div>
+                                <div className="flex-1">
+                                    <h3 className="text-xl font-semibold text-yellow-900 mb-2">
+                                        Depot Sedang Dalam Proses Verifikasi
+                                    </h3>
+                                    <p className="text-yellow-800 mb-3">
+                                        Depot Anda sedang ditinjau oleh admin.
+                                        Anda belum dapat menggunakan fitur
+                                        dashboard sampai depot disetujui.
+                                    </p>
+                                    <p className="text-sm text-yellow-700">
+                                        Fitur yang dinonaktifkan: Buka/Tutup
+                                        Depot, Kelola Produk, Terima Pesanan
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {approvalStatus === "rejected" && (
+                        <div className="glass-card rounded-2xl p-6 mb-8 border-2 border-red-300 bg-red-50/50">
+                            <div className="flex items-start space-x-4">
+                                <div className="flex-shrink-0">
+                                    <XCircle className="w-8 h-8 text-red-600" />
+                                </div>
+                                <div className="flex-1">
+                                    <h3 className="text-xl font-semibold text-red-900 mb-2">
+                                        Depot Ditolak
+                                    </h3>
+                                    <p className="text-red-800 mb-3">
+                                        Maaf, pendaftaran depot Anda ditolak
+                                        oleh admin.
+                                    </p>
+                                    {rejectionReason && (
+                                        <div className="bg-white/50 rounded-xl p-4 mb-3">
+                                            <p className="text-sm font-medium text-red-900 mb-1">
+                                                Alasan Penolakan:
+                                            </p>
+                                            <p className="text-red-800">
+                                                {rejectionReason}
+                                            </p>
+                                        </div>
+                                    )}
+                                    <p className="text-sm text-red-700">
+                                        Silakan hubungi admin untuk informasi
+                                        lebih lanjut atau daftar ulang dengan
+                                        informasi yang benar.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
 
                     {/* Statistics Cards Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">

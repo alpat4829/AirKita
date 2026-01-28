@@ -142,6 +142,8 @@ class MitraDashboardController extends Controller
             'isOpen' => $isOpen,
             'isWithinHours' => $isWithinHours,
             'unreadOrdersCount' => $unreadOrdersCount,
+            'approvalStatus' => $mitra->approval_status,
+            'rejectionReason' => $mitra->rejection_reason,
         ]);
     }
 

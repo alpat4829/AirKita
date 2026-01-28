@@ -33,8 +33,9 @@ class PelangganDashboardController extends Controller
             ->where('Status_Pesanan', 'Dibatalkan')
             ->count();
 
-        // Get depots with filters
+        // Get depots with filters - only show approved depots
         $depotsQuery = Mitra::where('Status', 'active')
+            ->approved()
             ->with(['kelurahan.kecamatan', 'produk'])
             ->withCount([
                 'produk as products_sold' => function ($query) {

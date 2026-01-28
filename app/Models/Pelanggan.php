@@ -10,6 +10,11 @@ class Pelanggan extends Model
     protected $primaryKey = 'ID_Pelanggan';
     protected $fillable = ['user_id', 'ID_KELURAHAN', 'Nama', 'No_HP', 'Alamat', 'Email', 'Tanggal_Daftar'];
 
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
     public function kelurahan()
     {
         return $this->belongsTo(Kelurahan::class, 'ID_KELURAHAN', 'ID_KELURAHAN');

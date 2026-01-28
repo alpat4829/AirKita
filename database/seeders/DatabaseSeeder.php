@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
         // Seeding data wilayah (Provinsi, Kabupaten, Kecamatan, Kelurahan)
         $this->call([
             WilayahSeeder::class,
+            AdminUserSeeder::class,
         ]);
 
         // User::factory(10)->create();

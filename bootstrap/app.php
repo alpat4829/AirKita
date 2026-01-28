@@ -20,6 +20,8 @@ return Application::configure(basePath: dirname(__DIR__))
         // Register role middleware alias
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckRole::class,
+            'admin' => \App\Http\Middleware\IsAdmin::class,
+            'depot.approved' => \App\Http\Middleware\DepotApproved::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

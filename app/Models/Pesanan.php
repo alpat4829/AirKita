@@ -35,4 +35,16 @@ class Pesanan extends Model
     {
         return $this->hasOne(Invoice::class, 'id_pesanan', 'ID_Pesanan');
     }
+
+    public function mitra()
+    {
+        return $this->hasOneThrough(
+            Mitra::class,
+            Produk::class,
+            'ID_Produk', // Foreign key on produk table
+            'ID_Mitra',  // Foreign key on mitra table
+            'ID_Produk', // Local key on pesanan table
+            'ID_Mitra'   // Local key on produk table
+        );
+    }
 }

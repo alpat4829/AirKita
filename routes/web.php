@@ -69,28 +69,53 @@ use App\Http\Controllers\MitraOrderController;
 Route::middleware(['auth', 'verified', 'role:mitra'])->group(function () {
     Route::get('/dashboard/mitra', [MitraDashboardController::class, 'index'])->name('mitra.dashboard');
 
-    // Depot Controls
-    Route::post('/dashboard/mitra/toggle-status', [MitraDashboardController::class, 'toggleStatus'])->name('mitra.toggle.status');
-    Route::post('/dashboard/mitra/reset-status', [MitraDashboardController::class, 'resetStatus'])->name('mitra.reset.status');
-    Route::post('/dashboard/mitra/update-hours', [MitraDashboardController::class, 'updateHours'])->name('mitra.update.hours');
+    // Routes that require depot approval
+    Route::middleware(['depot.approved'])->group(function () {
+        // Depot Controls
+        Route::post('/dashboard/mitra/toggle-status', [MitraDashboardController::class, 'toggleStatus'])->name('mitra.toggle.status');
+        Route::post('/dashboard/mitra/reset-status', [MitraDashboardController::class, 'resetStatus'])->name('mitra.reset.status');
+        Route::post('/dashboard/mitra/update-hours', [MitraDashboardController::class, 'updateHours'])->name('mitra.update.hours');
 
-    // Product Management
-    Route::get('/dashboard/mitra/products', [MitraProductController::class, 'index'])->name('mitra.products');
-    Route::post('/dashboard/mitra/products', [MitraProductController::class, 'store'])->name('mitra.products.store');
-    Route::put('/dashboard/mitra/products/{id}', [MitraProductController::class, 'update'])->name('mitra.products.update');
-    Route::delete('/dashboard/mitra/products/{id}', [MitraProductController::class, 'destroy'])->name('mitra.products.destroy');
+        // Product Management
+        Route::get('/dashboard/mitra/products', [MitraProductController::class, 'index'])->name('mitra.products');
+        Route::post('/dashboard/mitra/products', [MitraProductController::class, 'store'])->name('mitra.products.store');
+        Route::put('/dashboard/mitra/products/{id}', [MitraProductController::class, 'update'])->name('mitra.products.update');
+        Route::delete('/dashboard/mitra/products/{id}', [MitraProductController::class, 'destroy'])->name('mitra.products.destroy');
 
-    // Order Management
-    Route::get('/dashboard/mitra/orders', [MitraOrderController::class, 'history'])->name('mitra.orders');
-    Route::post('/dashboard/mitra/order/{id}/accept', [MitraOrderController::class, 'accept'])->name('mitra.order.accept');
-    Route::post('/dashboard/mitra/order/{id}/reject', [MitraOrderController::class, 'reject'])->name('mitra.order.reject');
-    Route::post('/dashboard/mitra/order/{id}/complete', [MitraOrderController::class, 'complete'])->name('mitra.order.complete');
+        // Order Management
+        Route::get('/dashboard/mitra/orders', [MitraOrderController::class, 'history'])->name('mitra.orders');
+        Route::post('/dashboard/mitra/order/{id}/accept', [MitraOrderController::class, 'accept'])->name('mitra.order.accept');
+        Route::post('/dashboard/mitra/order/{id}/reject', [MitraOrderController::class, 'reject'])->name('mitra.order.reject');
+        Route::post('/dashboard/mitra/order/{id}/complete', [MitraOrderController::class, 'complete'])->name('mitra.order.complete');
 
-    // Invoice routes for mitra
-    Route::get('/dashboard/mitra/invoices', [\App\Http\Controllers\InvoiceController::class, 'mitraIndex'])->name('mitra.invoices');
-    Route::get('/dashboard/mitra/invoices/{id}', [\App\Http\Controllers\InvoiceController::class, 'show'])->name('mitra.invoices.show');
-    Route::get('/dashboard/mitra/invoices/{id}/download', [\App\Http\Controllers\InvoiceController::class, 'download'])->name('mitra.invoices.download');
-    Route::get('/dashboard/mitra/invoices/{id}/view', [\App\Http\Controllers\InvoiceController::class, 'view'])->name('mitra.invoices.view');
+        // Invoice routes for mitra
+        Route::get('/dashboard/mitra/invoices', [\App\Http\Controllers\InvoiceController::class, 'mitraIndex'])->name('mitra.invoices');
+        Route::get('/dashboard/mitra/invoices/{id}', [\App\Http\Controllers\InvoiceController::class, 'show'])->name('mitra.invoices.show');
+        Route::get('/dashboard/mitra/invoices/{id}/download', [\App\Http\Controllers\InvoiceController::class, 'download'])->name('mitra.invoices.download');
+        Route::get('/dashboard/mitra/invoices/{id}/view', [\App\Http\Controllers\InvoiceController::class, 'view'])->name('mitra.invoices.view');
+    });
+});
+
+// Admin Routes
+use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\AdminDepotController;
+use App\Http\Controllers\AdminOrderController;
+
+Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+
+    // Depot Approval Management
+    Route::get('/depots', [AdminDepotController::class, 'index'])->name('depots.index');
+    Route::get('/depots/{id}', [AdminDepotController::class, 'show'])->name('depots.show');
+    Route::post('/depots/{id}/approve', [AdminDepotController::class, 'approve'])->name('depots.approve');
+    Route::post('/depots/{id}/reject', [AdminDepotController::class, 'reject'])->name('depots.reject');
+
+    // Order Monitoring
+    Route::get('/orders', [AdminOrderController::class, 'index'])->name('orders.index');
+    Route::get('/orders/{id}', [AdminOrderController::class, 'show'])->name('orders.show');
+
+    // Invoice viewing
+    Route::get('/invoices/{id}/view', [\App\Http\Controllers\InvoiceController::class, 'view'])->name('invoices.view');
 });
 
 // Payment callback route (no auth middleware for Midtrans webhook)

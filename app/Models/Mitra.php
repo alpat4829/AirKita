@@ -25,7 +25,11 @@ class Mitra extends Model
         'Jam_buka',
         'Jam_Tutup',
         'Status',
-        'Manual_Status'
+        'Manual_Status',
+        'approval_status',
+        'verified_at',
+        'verified_by',
+        'rejection_reason'
     ];
 
     /**
@@ -68,5 +72,49 @@ class Mitra extends Model
     public function produk()
     {
         return $this->hasMany(Produk::class, 'ID_Mitra', 'ID_Mitra');
+    }
+
+    public function verifier()
+    {
+        return $this->belongsTo(User::class, 'verified_by', 'id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
+    // Scopes for filtering by approval status
+    public function scopeApproved($query)
+    {
+        return $query->where('approval_status', 'approved');
+    }
+
+    public function scopePending($query)
+    {
+        return $query->where('approval_status', 'pending');
+    }
+
+    public function scopeRejected($query)
+    {
+        return $query->where('approval_status', 'rejected');
+    }
+
+    // Check if depot is approved
+    public function isApproved()
+    {
+        return $this->approval_status === 'approved';
+    }
+
+    // Check if depot is pending
+    public function isPending()
+    {
+        return $this->approval_status === 'pending';
+    }
+
+    // Check if depot is rejected
+    public function isRejected()
+    {
+        return $this->approval_status === 'rejected';
     }
 }
