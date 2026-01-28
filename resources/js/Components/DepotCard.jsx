@@ -13,11 +13,9 @@ export default function DepotCard({ depot, onClick }) {
 
     return (
         <div
-            onClick={() => depotOpen && onClick(depot)}
-            className={`group relative overflow-hidden rounded-2xl glass-card transition-all duration-300 ${
-                depotOpen
-                    ? "hover:shadow-2xl hover:-translate-y-2 cursor-pointer"
-                    : "opacity-60 cursor-not-allowed"
+            onClick={() => onClick(depot)}
+            className={`group relative overflow-hidden rounded-2xl glass-card transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 cursor-pointer ${
+                !depotOpen && "grayscale-[0.5]"
             }`}
         >
             {/* Depot Photo or Gradient Background */}

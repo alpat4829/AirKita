@@ -153,6 +153,11 @@ export default function Orders({ auth, orders, pelanggan }) {
                 text: "text-green-700",
                 label: "Lunas",
             },
+            Lunas: {
+                bg: "bg-green-100",
+                text: "text-green-700",
+                label: "Lunas",
+            },
             Pending: {
                 bg: "bg-yellow-100",
                 text: "text-yellow-700",
@@ -292,8 +297,10 @@ export default function Orders({ auth, orders, pelanggan }) {
                                                 {/* Action buttons */}
                                                 <div className="flex flex-wrap gap-2 justify-end">
                                                     {/* View Invoice - for paid orders */}
-                                                    {order.Status_Pembayaran ===
-                                                        "Paid" &&
+                                                    {(order.Status_Pembayaran ===
+                                                        "Paid" ||
+                                                        order.Status_Pembayaran ===
+                                                            "Lunas") &&
                                                         order.invoice && (
                                                             <a
                                                                 href={`/dashboard/pelanggan/invoices/${order.invoice.hashed_id}/view`}

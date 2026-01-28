@@ -31,13 +31,35 @@ class MitraOrderController extends Controller
         $pesanan = Pesanan::whereHas('produk', function ($query) use ($mitra) {
             $query->where('ID_Mitra', $mitra->ID_Mitra);
         })
+            ->with(['pelanggan', 'invoice']) // Ensure invoice is loaded if needed for checks
             ->findOrFail($id);
 
-        $pesanan->update([
-            'Status_Pesanan' => 'Dibatalkan'
-        ]);
+        \Illuminate\Support\Facades\DB::transaction(function () use ($pesanan, &$message) {
+            // Refresh model to get latest status
+            $pesanan->refresh();
 
-        return response()->json(['message' => 'Pesanan ditolak']);
+            \Illuminate\Support\Facades\Log::info('Rejecting Order: ' . $pesanan->ID_Pesanan);
+            \Illuminate\Support\Facades\Log::info('Status Pembayaran: ' . $pesanan->Status_Pembayaran);
+            \Illuminate\Support\Facades\Log::info('Has Pelanggan: ' . ($pesanan->pelanggan ? 'Yes' : 'No'));
+
+            // Refund logic
+            // Check for 'Lunas' OR 'Paid' status effectively
+            $status = trim($pesanan->Status_Pembayaran);
+            if (($status === 'Lunas' || $status === 'Paid') && $pesanan->pelanggan) {
+                $pesanan->pelanggan->increment('saldo', $pesanan->Harga);
+                \Illuminate\Support\Facades\Log::info('Refunded: ' . $pesanan->Harga . ' to Pelanggan ID: ' . $pesanan->ID_Pelanggan);
+                $message = 'Pesanan ditolak dan dana Rp ' . number_format($pesanan->Harga, 0, ',', '.') . ' telah dikembalikan ke saldo pengguna.';
+            } else {
+                \Illuminate\Support\Facades\Log::info('Refund Skipped. Status: ' . $status);
+                $message = 'Pesanan ditolak';
+            }
+
+            $pesanan->update([
+                'Status_Pesanan' => 'Dibatalkan'
+            ]);
+        });
+
+        return response()->json(['message' => $message]);
     }
 
     public function complete($id)

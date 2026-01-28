@@ -49,8 +49,45 @@ class OrderController extends Controller
             'Harga' => $totalHarga,
             'Jumlah' => $request->jumlah,
             'Status_Pembayaran' => 'Pending',
-            'Metode_Pembayaran' => 'Digital'
+            'Metode_Pembayaran' => $request->payment_method ?? 'Digital'
         ]);
+
+        // Handle 'Saldo' payment method
+        if ($request->payment_method === 'Saldo') {
+            if ($pelanggan->saldo >= $totalHarga) {
+                // Deduct saldo
+                $pelanggan->decrement('saldo', $totalHarga);
+
+                // Update order to Paid
+                $pesanan->update([
+                    'Status_Pembayaran' => 'Paid',
+                    'Status_Pesanan' => 'Diproses',
+                    'Tanggal_Pembayaran' => now()
+                ]);
+
+                // Generate invoices manually since we don't go through payment callback
+                try {
+                    $invoiceService = app(\App\Services\InvoiceService::class);
+                    $invoiceService->createUserInvoice($pesanan);
+                    $invoiceService->createMitraInvoice($pesanan);
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error('Error generating invoice for saldo payment: ' . $e->getMessage());
+                }
+
+                return response()->json([
+                    'message' => 'Pembayaran berhasil menggunakan Saldo',
+                    'order_id' => $pesanan->ID_Pesanan,
+                    'status' => 'success'
+                ]);
+            } else {
+                // If saldo insufficient, revert input or return error
+                // In this flow, we assume frontend checked it, but backend validation is crucial
+                if (!$existingOrder) {
+                    $pesanan->delete(); // Cleanup if creation was part of this request
+                }
+                return response()->json(['error' => 'Saldo tidak mencukupi'], 400);
+            }
+        }
 
         // Generate Midtrans snap_token
         $snapToken = $this->generateMidtransToken($pesanan, $pelanggan, $produk);

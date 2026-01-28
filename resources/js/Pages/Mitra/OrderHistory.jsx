@@ -93,6 +93,11 @@ export default function OrderHistory({ auth, orders, mitra, filters, isOpen }) {
                 text: "text-green-700",
                 label: "Lunas",
             },
+            Lunas: {
+                bg: "bg-green-100",
+                text: "text-green-700",
+                label: "Lunas",
+            },
             Pending: {
                 bg: "bg-yellow-100",
                 text: "text-yellow-700",
@@ -262,8 +267,10 @@ export default function OrderHistory({ auth, orders, mitra, filters, isOpen }) {
                                                 {/* Action buttons */}
                                                 <div className="flex flex-col gap-2 mt-2">
                                                     {/* View Invoice button for paid orders */}
-                                                    {order.Status_Pembayaran ===
-                                                        "Paid" &&
+                                                    {(order.Status_Pembayaran ===
+                                                        "Paid" ||
+                                                        order.Status_Pembayaran ===
+                                                            "Lunas") &&
                                                         order.invoice && (
                                                             <a
                                                                 href={`/dashboard/mitra/invoices/${order.invoice.hashed_id}/view`}

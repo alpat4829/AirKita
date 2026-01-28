@@ -2,10 +2,12 @@ import { Head, router } from "@inertiajs/react";
 import Sidebar from "@/Components/Sidebar";
 import ProductCard from "@/Components/ProductCard";
 import GoogleMapDisplay from "@/Components/GoogleMapDisplay";
+import PaymentModal from "@/Components/PaymentModal";
 import { MapPin, Clock, Phone, Mail } from "lucide-react";
 import { getWhatsAppUrl } from "@/utils/maps";
 import axios from "axios";
 import { toast } from "react-hot-toast";
+import { useState } from "react";
 
 export default function DepotDetail({
     auth,
@@ -13,14 +15,36 @@ export default function DepotDetail({
     pelanggan,
     googleMapsApiKey,
 }) {
-    const handleOrder = async (product, quantity) => {
+    const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+    const [tempOrder, setTempOrder] = useState(null);
+
+    const handleOrder = (product, quantity) => {
+        setTempOrder({
+            product,
+            quantity,
+            totalPrice: product.Harga * quantity,
+        });
+        setIsPaymentModalOpen(true);
+    };
+
+    const handleConfirmPayment = async (method) => {
+        setIsPaymentModalOpen(false);
+        const { product, quantity } = tempOrder;
+
         try {
             const response = await axios.post("/dashboard/pelanggan/order", {
                 id_produk: product.ID_Produk,
                 jumlah: quantity,
+                payment_method: method,
             });
 
-            // Open Midtrans payment popup
+            if (method === "Saldo") {
+                toast.success("Pembayaran berhasil menggunakan Saldo!");
+                router.visit("/dashboard/pelanggan/orders");
+                return;
+            }
+
+            // Open Midtrans payment popup for Digital
             window.snap.pay(response.data.snap_token, {
                 onSuccess: async function (result) {
                     toast.success("Pembayaran berhasil!");
@@ -48,7 +72,7 @@ export default function DepotDetail({
                 },
             });
         } catch (error) {
-            toast.error("Gagal membuat pesanan");
+            toast.error(error.response?.data?.error || "Gagal membuat pesanan");
             console.error(error);
         }
     };
@@ -244,6 +268,17 @@ export default function DepotDetail({
                     )}
                 </div>
             </div>
+
+            {/* Payment Modal */}
+            {tempOrder && (
+                <PaymentModal
+                    isOpen={isPaymentModalOpen}
+                    onClose={() => setIsPaymentModalOpen(false)}
+                    onSelectPayment={handleConfirmPayment}
+                    saldo={pelanggan.saldo}
+                    totalPrice={tempOrder.totalPrice}
+                />
+            )}
         </div>
     );
 }

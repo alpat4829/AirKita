@@ -8,7 +8,7 @@ class Pelanggan extends Model
 {
     protected $table = 'pelanggan';
     protected $primaryKey = 'ID_Pelanggan';
-    protected $fillable = ['user_id', 'ID_KELURAHAN', 'Nama', 'No_HP', 'Alamat', 'Email', 'Tanggal_Daftar'];
+    protected $fillable = ['user_id', 'ID_KELURAHAN', 'Nama', 'No_HP', 'Alamat', 'Email', 'Tanggal_Daftar', 'saldo'];
 
     public function user()
     {

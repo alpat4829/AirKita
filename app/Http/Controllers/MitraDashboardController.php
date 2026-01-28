@@ -25,8 +25,8 @@ class MitraDashboardController extends Controller
             $query->where('ID_Mitra', $mitra->ID_Mitra);
         })
             ->whereDate('Tanggal_Pesan', Carbon::today())
-            ->where('Status_Pembayaran', 'Paid') // Only show paid orders
-            ->where('Status_Pesanan', 'Diproses') // Only show orders waiting to be accepted
+            ->whereIn('Status_Pembayaran', ['Paid', 'Lunas']) // Handle both statuses
+            ->whereIn('Status_Pesanan', ['Diproses', 'Menunggu Konfirmasi']) // Handle both statuses
             ->with(['pelanggan.kelurahan', 'produk', 'invoice'])
             ->orderBy('Tanggal_Pesan', 'desc')
             ->get();
@@ -37,7 +37,7 @@ class MitraDashboardController extends Controller
             $query->where('ID_Mitra', $mitra->ID_Mitra);
         })
             ->whereDate('Tanggal_Pesan', Carbon::today())
-            ->where('Status_Pembayaran', 'Paid')
+            ->whereIn('Status_Pembayaran', ['Paid', 'Lunas'])
             ->count();
 
         $ordersThisMonth = Pesanan::whereHas('produk', function ($query) use ($mitra) {
@@ -45,14 +45,15 @@ class MitraDashboardController extends Controller
         })
             ->whereMonth('Tanggal_Pesan', Carbon::now()->month)
             ->whereYear('Tanggal_Pesan', Carbon::now()->year)
-            ->where('Status_Pembayaran', 'Paid')
+            ->whereIn('Status_Pembayaran', ['Paid', 'Lunas'])
             ->count();
 
         // Total Revenue (all time)
         $totalRevenue = Pesanan::whereHas('produk', function ($query) use ($mitra) {
             $query->where('ID_Mitra', $mitra->ID_Mitra);
         })
-            ->where('Status_Pembayaran', 'Paid')
+            ->whereIn('Status_Pembayaran', ['Paid', 'Lunas'])
+            ->where('Status_Pesanan', 'Selesai') // Only count completed orders
             ->sum('Harga');
 
         // Today's Revenue
@@ -60,21 +61,22 @@ class MitraDashboardController extends Controller
             $query->where('ID_Mitra', $mitra->ID_Mitra);
         })
             ->whereDate('Tanggal_Pesan', Carbon::today())
-            ->where('Status_Pembayaran', 'Paid')
+            ->whereIn('Status_Pembayaran', ['Paid', 'Lunas'])
+            ->where('Status_Pesanan', 'Selesai') // Only count completed orders
             ->sum('Harga');
 
         // Order Status Breakdown
         $pendingOrders = Pesanan::whereHas('produk', function ($query) use ($mitra) {
             $query->where('ID_Mitra', $mitra->ID_Mitra);
         })
-            ->where('Status_Pembayaran', 'Paid')
-            ->where('Status_Pesanan', 'Diproses')
+            ->whereIn('Status_Pembayaran', ['Paid', 'Lunas'])
+            ->whereIn('Status_Pesanan', ['Diproses', 'Menunggu Konfirmasi'])
             ->count();
 
         $completedOrders = Pesanan::whereHas('produk', function ($query) use ($mitra) {
             $query->where('ID_Mitra', $mitra->ID_Mitra);
         })
-            ->where('Status_Pembayaran', 'Paid')
+            ->whereIn('Status_Pembayaran', ['Paid', 'Lunas'])
             ->where('Status_Pesanan', 'Selesai')
             ->count();
 
@@ -87,14 +89,15 @@ class MitraDashboardController extends Controller
                 $query->where('ID_Mitra', $mitra->ID_Mitra);
             })
                 ->whereDate('Tanggal_Pesan', $date)
-                ->where('Status_Pembayaran', 'Paid')
+                ->whereIn('Status_Pembayaran', ['Paid', 'Lunas'])
+                ->where('Status_Pesanan', 'Selesai')
                 ->sum('Harga');
 
             $dayOrders = Pesanan::whereHas('produk', function ($query) use ($mitra) {
                 $query->where('ID_Mitra', $mitra->ID_Mitra);
             })
                 ->whereDate('Tanggal_Pesan', $date)
-                ->where('Status_Pembayaran', 'Paid')
+                ->whereIn('Status_Pembayaran', ['Paid', 'Lunas'])
                 ->count();
 
             $chartData[] = [
@@ -122,8 +125,8 @@ class MitraDashboardController extends Controller
         $unreadOrdersCount = Pesanan::whereHas('produk', function ($query) use ($mitra) {
             $query->where('ID_Mitra', $mitra->ID_Mitra);
         })
-            ->where('Status_Pembayaran', 'Paid')
-            ->where('Status_Pesanan', 'Menunggu Pembayaran')
+            ->whereIn('Status_Pembayaran', ['Paid', 'Lunas'])
+            ->whereIn('Status_Pesanan', ['Diproses', 'Menunggu Konfirmasi'])
             ->whereDate('Tanggal_Pesan', Carbon::today())
             ->count();
 

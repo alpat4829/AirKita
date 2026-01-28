@@ -12,6 +12,7 @@ import {
     CheckCircle,
     Clock,
     XCircle,
+    Wallet,
 } from "lucide-react";
 
 export default function DashboardPelanggan({
@@ -116,6 +117,31 @@ export default function DashboardPelanggan({
                             count={statistics.cancelled}
                             color="red"
                         />
+                    </div>
+
+                    {/* Saldo Card */}
+                    <div className="mb-8">
+                        <div className="rounded-2xl p-6 bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-xl relative overflow-hidden">
+                            {/* Decorational circles */}
+                            <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-white/10 rounded-full blur-xl"></div>
+                            <div className="absolute bottom-0 left-0 -mb-4 -ml-4 w-24 h-24 bg-white/10 rounded-full blur-xl"></div>
+
+                            <div className="relative flex items-center justify-between z-10">
+                                <div>
+                                    <p className="text-purple-100 font-medium mb-1 text-lg">
+                                        Saldo Refund
+                                    </p>
+                                    <h3 className="text-4xl font-bold font-brush tracking-wide">
+                                        {`Rp ${new Intl.NumberFormat(
+                                            "id-ID",
+                                        ).format(pelanggan.saldo)}`}
+                                    </h3>
+                                </div>
+                                <div className="p-4 bg-white/20 rounded-2xl backdrop-blur-md shadow-inner border border-white/10">
+                                    <Wallet className="w-10 h-10 text-white" />
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     {/* Filters */}
