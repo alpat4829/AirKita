@@ -31,9 +31,15 @@ class Pesanan extends Model
         return $this->belongsTo(Produk::class, 'ID_Produk', 'ID_Produk');
     }
 
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class, 'id_pesanan', 'ID_Pesanan');
+    }
+
+    // Helper to get the primary invoice (usually customer invoice)
     public function invoice()
     {
-        return $this->hasOne(Invoice::class, 'id_pesanan', 'ID_Pesanan');
+        return $this->hasOne(Invoice::class, 'id_pesanan', 'ID_Pesanan')->where('invoice_type', 'user');
     }
 
     public function mitra()

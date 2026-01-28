@@ -124,13 +124,15 @@ class InvoiceController extends Controller
             ->where('id_pesanan', $orderId)
             ->firstOrFail();
 
-        // Check authorization
+        // Check authorization (allow admin to bypass)
         $user = Auth::user();
-        if ($user->pelanggan && $invoice->id_pelanggan != $user->pelanggan->ID_Pelanggan) {
-            abort(403, 'Unauthorized');
-        }
-        if ($user->mitra && $invoice->id_mitra != $user->mitra->ID_Mitra) {
-            abort(403, 'Unauthorized');
+        if ($user->role !== 'admin') {
+            if ($user->pelanggan && $invoice->id_pelanggan != $user->pelanggan->ID_Pelanggan) {
+                abort(403, 'Unauthorized');
+            }
+            if ($user->mitra && $invoice->id_mitra != $user->mitra->ID_Mitra) {
+                abort(403, 'Unauthorized');
+            }
         }
 
         $pdf = $this->invoiceService->generatePDF($invoice);

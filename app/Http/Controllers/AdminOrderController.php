@@ -12,7 +12,7 @@ class AdminOrderController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Pesanan::with(['mitra.kelurahan.kecamatan', 'pelanggan.user']);
+        $query = Pesanan::with(['mitra.kelurahan.kecamatan', 'pelanggan.user', 'invoice:id,id_pesanan,invoice_number']);
 
         // Filter by depot
         if ($request->has('depot_id') && $request->depot_id) {

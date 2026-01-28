@@ -13,6 +13,7 @@ import {
     XCircle,
     Package,
     Store,
+    FileText,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -167,7 +168,7 @@ export default function OrdersIndex({ auth, orders, stats, depots, filters }) {
                     </div>
 
                     {/* Filters */}
-                    <div className="glass-card rounded-2xl p-6 mb-6">
+                    <div className="glass-card rounded-2xl p-6 mb-6 relative z-20">
                         <div className="flex items-center space-x-2 mb-4">
                             <Filter className="w-5 h-5 text-purple-600" />
                             <h2 className="text-xl font-semibold text-gray-900">
@@ -198,51 +199,56 @@ export default function OrdersIndex({ auth, orders, stats, depots, filters }) {
 
                             {/* Status Filter */}
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Status
-                                </label>
-                                <select
+                                <GlassSelect
+                                    label="Status"
                                     value={filterState.status}
-                                    onChange={(e) =>
-                                        handleFilterChange(
-                                            "status",
-                                            e.target.value,
-                                        )
+                                    onChange={(value) =>
+                                        handleFilterChange("status", value)
                                     }
-                                    className="w-full px-4 py-2 rounded-xl border-0 bg-white/50 focus:bg-white focus:ring-2 focus:ring-purple-500 transition-all"
-                                >
-                                    <option value="">Semua Status</option>
-                                    <option value="Menunggu Konfirmasi">
-                                        Menunggu Konfirmasi
-                                    </option>
-                                    <option value="Diterima">Diterima</option>
-                                    <option value="Selesai">Selesai</option>
-                                    <option value="Dibatalkan">
-                                        Dibatalkan
-                                    </option>
-                                    <option value="Ditolak">Ditolak</option>
-                                </select>
+                                    options={[
+                                        { value: "", label: "Semua Status" },
+                                        {
+                                            value: "Menunggu Konfirmasi",
+                                            label: "Menunggu Konfirmasi",
+                                        },
+                                        {
+                                            value: "Diterima",
+                                            label: "Diterima",
+                                        },
+                                        { value: "Selesai", label: "Selesai" },
+                                        {
+                                            value: "Dibatalkan",
+                                            label: "Dibatalkan",
+                                        },
+                                        { value: "Ditolak", label: "Ditolak" },
+                                    ]}
+                                    placeholder="Pilih Status"
+                                    icon={CheckCircle}
+                                />
                             </div>
 
                             {/* Payment Method Filter */}
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Metode Pembayaran
-                                </label>
-                                <select
+                                <GlassSelect
+                                    label="Metode Pembayaran"
                                     value={filterState.payment_method}
-                                    onChange={(e) =>
+                                    onChange={(value) =>
                                         handleFilterChange(
                                             "payment_method",
-                                            e.target.value,
+                                            value,
                                         )
                                     }
-                                    className="w-full px-4 py-2 rounded-xl border-0 bg-white/50 focus:bg-white focus:ring-2 focus:ring-purple-500 transition-all"
-                                >
-                                    <option value="">Semua Metode</option>
-                                    <option value="COD">COD</option>
-                                    <option value="E-Wallet">E-Wallet</option>
-                                </select>
+                                    options={[
+                                        { value: "", label: "Semua Metode" },
+                                        { value: "COD", label: "COD" },
+                                        {
+                                            value: "E-Wallet",
+                                            label: "E-Wallet",
+                                        },
+                                    ]}
+                                    placeholder="Pilih Metode"
+                                    icon={DollarSign}
+                                />
                             </div>
 
                             {/* Date From */}
@@ -397,13 +403,23 @@ export default function OrdersIndex({ auth, orders, stats, depots, filters }) {
                                                         )}
                                                     </td>
                                                     <td className="px-6 py-4 whitespace-nowrap text-right">
-                                                        <Link
-                                                            href={`/admin/orders/${order.ID_Pesanan}`}
-                                                            className="inline-flex items-center space-x-1 text-purple-600 hover:text-purple-700 font-medium"
-                                                        >
-                                                            <Eye className="w-4 h-4" />
-                                                            <span>Detail</span>
-                                                        </Link>
+                                                        {order.invoice ? (
+                                                            <a
+                                                                href={`/admin/invoices/${order.invoice.hashed_id}/view`}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="inline-flex items-center space-x-1 text-purple-600 hover:text-purple-700 font-medium"
+                                                            >
+                                                                <FileText className="w-4 h-4" />
+                                                                <span>
+                                                                    Invoice
+                                                                </span>
+                                                            </a>
+                                                        ) : (
+                                                            <span className="text-gray-400 text-sm italic">
+                                                                No Invoice
+                                                            </span>
+                                                        )}
                                                     </td>
                                                 </tr>
                                             ))}
