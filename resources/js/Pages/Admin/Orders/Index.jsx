@@ -1,6 +1,7 @@
 import { Head, Link, router } from "@inertiajs/react";
 import AdminSidebar from "@/Components/AdminSidebar";
 import StatisticsCard from "@/Components/StatisticsCard";
+import GlassSelect from "@/Components/GlassSelect";
 import {
     ShoppingBag,
     DollarSign,
@@ -11,6 +12,7 @@ import {
     CheckCircle,
     XCircle,
     Package,
+    Store,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -176,29 +178,22 @@ export default function OrdersIndex({ auth, orders, stats, depots, filters }) {
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             {/* Depot Filter */}
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Depot
-                                </label>
-                                <select
+                                <GlassSelect
+                                    label="Depot"
                                     value={filterState.depot_id}
-                                    onChange={(e) =>
-                                        handleFilterChange(
-                                            "depot_id",
-                                            e.target.value,
-                                        )
+                                    onChange={(value) =>
+                                        handleFilterChange("depot_id", value)
                                     }
-                                    className="w-full px-4 py-2 rounded-xl border-0 bg-white/50 focus:bg-white focus:ring-2 focus:ring-purple-500 transition-all"
-                                >
-                                    <option value="">Semua Depot</option>
-                                    {depots.map((depot) => (
-                                        <option
-                                            key={depot.ID_Mitra}
-                                            value={depot.ID_Mitra}
-                                        >
-                                            {depot.Nama_Mitra}
-                                        </option>
-                                    ))}
-                                </select>
+                                    options={[
+                                        { value: "", label: "Semua Depot" },
+                                        ...depots.map((depot) => ({
+                                            value: depot.ID_Mitra,
+                                            label: depot.Nama_Mitra,
+                                        })),
+                                    ]}
+                                    placeholder="Pilih Depot"
+                                    icon={Store}
+                                />
                             </div>
 
                             {/* Status Filter */}

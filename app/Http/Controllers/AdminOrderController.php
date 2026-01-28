@@ -16,7 +16,9 @@ class AdminOrderController extends Controller
 
         // Filter by depot
         if ($request->has('depot_id') && $request->depot_id) {
-            $query->where('ID_Mitra', $request->depot_id);
+            $query->whereHas('produk', function ($q) use ($request) {
+                $q->where('ID_Mitra', $request->depot_id);
+            });
         }
 
         // Filter by kelurahan
